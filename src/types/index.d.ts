@@ -1,3 +1,5 @@
+export * from './style'
+
 export interface IdRecord<T extends string | number = number> {
   id: T
 }
