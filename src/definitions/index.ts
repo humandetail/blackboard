@@ -51,3 +51,10 @@ export enum Rotate {
   flipHorizontal,
   flipVertical
 }
+
+export enum ShapeType {
+  Rect,
+  Circle,
+  Line,
+  Textbox
+}

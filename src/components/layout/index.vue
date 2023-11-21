@@ -7,9 +7,7 @@
     <a-layout class="container">
       <a-layout>
         <a-layout-content class="main">
-          <main>
-            MAIN
-          </main>
+          <main-canvas />
         </a-layout-content>
         <a-layout-footer
           class="footer"

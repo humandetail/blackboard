@@ -26,11 +26,11 @@
 
     <main class="layers">
       <layer-item
-        v-for="(layer, index) of layers"
+        v-for="(layer, index) of layersStore.layers"
         :key="layer.id"
         :layer="layer"
         :index="index"
-        v-model:active-layer="activeLayer"
+        :active-layer="activeLayer"
         @change="handleLayerItemChange"
         @dragstart="handleDragStart"
         @dragend="handleDragEnd"
@@ -38,6 +38,7 @@
         @dragenter="handleDragEnter"
         @dragleave="handleDragLeave"
         @drop="handleDrop"
+        @update:active-layer="layersStore.changeCurrentLayer"
       />
     </main>
   </section>
@@ -45,39 +46,19 @@
 
 <script setup lang="ts">
 import { theme } from 'ant-design-vue'
-import type { LayerItem } from '@/types'
-
-import { createId } from '@/utils'
 
 import DynamicIcon from '@/components/common/icons/DynamicIcon'
+import { useLayersStore } from '@/store/layers'
+import type { LayerItem } from '@/types'
 
 const { token } = theme.useToken()
 const testValue = ref(1)
 
-const activeLayer = ref(1)
-const layers = ref<LayerItem[]>([
-  {
-    id: createId(),
-    title: '图层1',
-    visible: true,
-    data: null
-  },
-  {
-    id: createId(),
-    title: '图层1图层1图层1图层1图层1图层1图层1v',
-    visible: false,
-    data: null
-  },
-  ...Array.from({ length: 20 }, () => {
-    const id = createId()
-    return {
-      id,
-      title: `图层${id}`,
-      visible: true,
-      data: null
-    }
-  })
-])
+const layersStore = useLayersStore()
+
+const activeLayer = computed(() => {
+  return layersStore.currentLayer!.id
+})
 
 const operations = ref([
   { name: '新建图层', icon: 'FileOutlined', dragAction: 'copy' },
@@ -91,10 +72,10 @@ const {
   handleDragEnter,
   handleDragLeave,
   handleDrop
-} = useDrag(layers, 'dropzone')
+} = useDrag(layersStore.layers, 'dropzone')
 
 const handleLayerItemChange = (layer: LayerItem) => {
-  layers.value = layers.value.map(item => {
+  layersStore.layers = layersStore.layers.map(item => {
     return item.id === layer.id
       ? layer
       : item

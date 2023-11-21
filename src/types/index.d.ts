@@ -1,16 +1,30 @@
+import type { UploadFile } from 'ant-design-vue'
+
 export * from './style'
 
-export interface IdRecord<T extends string | number = number> {
+export type Id = string | number
+
+export interface IdRecord<T extends Id = number> {
   id: T
 }
 
+export type ColorString = string
+
 export interface LayerItem extends IdRecord {
-  title: string
+  background: ColorString
+  graphics: Set<Id>
   visible: boolean
-  data: null
+  opacity: number
 }
 
 export interface FrameItem extends IdRecord {
-  data: null
   delay: number
+  layers: Set<Id>
+}
+
+export interface Settings {
+  launch: boolean
+  width: number
+  height: number
+  sourceFile?: UploadFile
 }

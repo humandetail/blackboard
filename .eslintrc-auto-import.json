@@ -58,13 +58,12 @@
     "useAttrs": true,
     "useCssModule": true,
     "useCssVars": true,
+    "useDrag": true,
     "useSlots": true,
+    "useViewTransition": true,
     "watch": true,
     "watchEffect": true,
     "watchPostEffect": true,
-    "watchSyncEffect": true,
-    "useDrag": true,
-    "useViewTransition": true,
-    "useLayerDrag": true
+    "watchSyncEffect": true
   }
 }

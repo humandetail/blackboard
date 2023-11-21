@@ -17,11 +17,11 @@
 
     <main class="wrapper">
       <frame-item
-        v-for="(frame, index) of frames"
+        v-for="(frame, index) of framesStore.frames"
         :key="frame.id"
         :index="index"
         :frame="frame"
-        v-model:active-frame="activeFrame"
+        :active-frame="activeFrame"
         @change="handelFrameChange"
         @dragstart="handleDragStart"
         @dragend="handleDragEnd"
@@ -29,6 +29,7 @@
         @dragenter="handleDragEnter"
         @dragleave="handleDragLeave"
         @drop="handleDrop"
+        @update:active-frames="framesStore.changeCurrentFrame"
       />
     </main>
   </section>
@@ -38,22 +39,13 @@
 import { theme } from 'ant-design-vue'
 import type { FrameItem } from '@/types'
 
-import { createId } from '@/utils'
+import { useFramesStore } from '@/store/frames'
 
 const { token } = theme.useToken()
 
 const activeFrame = ref(1)
-const frames = ref<FrameItem[]>([
-  { id: createId(), data: null, delay: 0 },
-  { id: createId(), data: null, delay: 1 },
-  ...Array.from({ length: 10 }, () => {
-    return {
-      id: createId(),
-      data: null,
-      delay: 0
-    }
-  })
-])
+
+const framesStore = useFramesStore()
 
 const {
   handleDragStart,
@@ -62,10 +54,10 @@ const {
   handleDragEnter,
   handleDragLeave,
   handleDrop
-} = useDrag(frames, 'frame-dropzone')
+} = useDrag(framesStore.frames, 'frame-dropzone')
 
 const handelFrameChange = (frame: FrameItem) => {
-  frames.value = frames.value.map(item => {
+  framesStore.frames = framesStore.frames.map(item => {
     if (item.id === frame.id) {
       return frame
     }
