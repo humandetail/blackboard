@@ -11,7 +11,12 @@
         :title="tool.label"
       >
         <a-button
-          type="text"
+          :type="tool.value === settingsStore.currentTool.value ? 'primary' : 'text'"
+          class="btn"
+          :class="{
+            active: tool.value === settingsStore.currentTool.value
+          }"
+          @click="handleToolClick(tool)"
         >
           <icon-font :type="tool.icon" :style="{ fontSize: '20px' }" />
         </a-button>
@@ -23,6 +28,14 @@
 <script setup lang="ts">
 import { tools } from '@/definitions'
 import IconFont from '@/components/common/icons/IconFont'
+import { useSettingsStore } from '@/store'
+import type { ToolItem } from '@/types'
+
+const settingsStore = useSettingsStore()
+
+const handleToolClick = (tool: ToolItem) => {
+  settingsStore.changeTool(tool)
+}
 </script>
 
 <style lang="scss" scoped>

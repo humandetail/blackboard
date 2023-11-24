@@ -7,9 +7,10 @@ export type ChangeSelectedLayersAction = 'default' | 'add' | 'delete'
 
 export type MergeLayerAction = 'selected' | 'down'
 
-const createLayer = (graphics?: Set<Id>) => {
+const createLayer = (title: string, graphics?: Set<Id>) => {
   return {
     id: createId(),
+    title,
     background: 'transparent',
     graphics: graphics ?? new Set(),
     visible: true,
@@ -28,14 +29,14 @@ export const useLayersStore = defineStore('layers', () => {
   const framesStore = useFramesStore()
 
   const init = (graphicId?: Id | Id[]) => {
-    const layer = createLayer(new Set(isArray(graphicId) ? graphicId : graphicId !== undefined ? [graphicId] : []))
+    const layer = createLayer('图层1', new Set(isArray(graphicId) ? graphicId : graphicId !== undefined ? [graphicId] : []))
     layers.value = [layer]
     currentLayer.value = layer
     return layer
   }
 
   const newLayer = () => {
-    const layer = createLayer()
+    const layer = createLayer(`图层${layers.value.length + 1}`)
     layers.value.push(layer)
 
     framesStore.currentFrame!.layers.add(layer.id)
@@ -105,7 +106,7 @@ export const useLayersStore = defineStore('layers', () => {
           return prev
         }, new Set<Id>())
 
-        newLayer = createLayer(graphics)
+        newLayer = createLayer(`图层${layers.value.length + 1}`, graphics)
         layers.value.splice(idx, 0, newLayer)
 
         // 增加关联
@@ -131,7 +132,7 @@ export const useLayersStore = defineStore('layers', () => {
           return prev
         }, new Set<Id>())
 
-        newLayer = createLayer(graphics)
+        newLayer = createLayer(`图层${layers.value.length + 1}`, graphics)
         layers.value.splice(idx, items.length, newLayer)
 
         // 增加关联

@@ -13,6 +13,15 @@
     >
       <div class="index">{{ index + 1 }}</div>
       <div class="preview">
+        <canvas
+          ref="previewCanvasRef"
+          :width="settingsStore.settings.width"
+          :height="settingsStore.settings.height"
+          :style="{
+            transformOrigin: 'center center',
+            transform: `translate(-50%, -50%) scale(${scale}, ${scale})`
+          }"
+        ></canvas>
         <svg class="bg" viewBox="0 0 100 100" width="92" height="92">
           <rect
             x="0"
@@ -62,6 +71,8 @@
 <script setup lang="ts">
 import { theme } from 'ant-design-vue'
 import type { FrameItem } from '@/types'
+import { type GraphicItem, useSettingsStore, useGraphicsStore, useLayersStore } from '@/store'
+import { StaticCanvas } from 'fabric'
 
 const props = defineProps<{
   frame: FrameItem
@@ -91,6 +102,58 @@ const delayOptions = [
 ]
 
 const { token } = theme.useToken()
+
+const previewCanvasRef = ref<HTMLCanvasElement | null>(null)
+
+const settingsStore = useSettingsStore()
+const layersStore = useLayersStore()
+const graphicsStore = useGraphicsStore()
+
+const previewSize = 84
+
+const scale = computed(() => {
+  const { width, height } = settingsStore.settings
+  return width > height
+    ? previewSize / width
+    : previewSize / height
+})
+
+const graphics = computed(() => {
+  const graphics: GraphicItem[] = []
+  const layers = layersStore.layers
+
+  props.frame.layers.forEach(layerId => {
+    const layer = layers.find(i => i.id === layerId)
+    if (layer?.visible) {
+      layer.graphics.forEach(id => {
+        const graphic = graphicsStore.graphics.get(id)
+        if (graphic) {
+          graphics.push(graphic)
+        }
+      })
+    }
+  })
+
+  return graphics
+})
+
+let canvas: StaticCanvas
+
+watch(graphics, async () => {
+  if (!canvas) {
+    await nextTick()
+    canvas = new StaticCanvas(previewCanvasRef.value!)
+  }
+
+  canvas.clear()
+
+  const objects = Array.from(graphics.value)
+  console.log(222, objects)
+  const len = objects.length
+  for (let i = 0; i < len; i++) {
+    canvas.add(await objects[i].clone())
+  }
+})
 
 const handleItemClick = () => {
   emits('update:active-frame', props.frame.id)
@@ -160,13 +223,19 @@ const handleDelayChange = (delay: number) => {
     align-items: center;
     width: 84px;
     height: 84px;
-    @include transparentBg(8px);
 
     .bg {
       display: none;
       position: absolute;
       left: -4px;
       top: -4px;
+    }
+
+    > canvas {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      @include transparentBg(v-bind('`${settingsStore.settings.width / 8}px`'));
     }
   }
 

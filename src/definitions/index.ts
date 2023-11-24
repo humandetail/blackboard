@@ -1,18 +1,30 @@
 /* eslint-disable no-unused-vars */
 
-export const tools = [
+import { ToolItem } from '@/types'
+
+export enum ToolType {
+  select,
+  line,
+  square,
+  ellipse,
+  text,
+  pencil,
+  eraser
+}
+
+export const tools: ToolItem[][] = [
   [
-    { label: '选择', value: 'move', icon: 'icon-select' }
+    { label: '选择', value: ToolType.select, icon: 'icon-select', cursor: 'default' }
   ],
   [
-    { label: '直线', value: 'line', icon: 'icon-line' },
-    { label: '矩形', value: 'square', icon: 'icon-square' },
-    { label: '椭圆', value: 'ellipse', icon: 'icon-ellipse' }
+    { label: '直线', value: ToolType.line, icon: 'icon-line', cursor: 'crosshair' },
+    { label: '矩形', value: ToolType.square, icon: 'icon-square', cursor: 'crosshair' },
+    { label: '椭圆', value: ToolType.ellipse, icon: 'icon-ellipse', cursor: 'crosshair' }
   ],
   [
-    { label: '文本框', value: 'text', icon: 'icon-text' },
-    { label: '铅笔', value: 'pencil', icon: 'icon-pencil' },
-    { label: '橡皮擦', value: 'eraser', icon: 'icon-eraser' }
+    { label: '文本框', value: ToolType.text, icon: 'icon-text', cursor: 'crosshair' },
+    { label: '铅笔', value: ToolType.pencil, icon: 'icon-pencil', cursor: 'crosshair' },
+    { label: '橡皮擦', value: ToolType.eraser, icon: 'icon-eraser', cursor: 'url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAAXNSR0IArs4c6QAAANxJREFUOE9jZKAyYKSyeQzDw8BwBgYGDWjQ3GBgYFiJL5jweTmCm5t7qoqKCquxsTEvyJCzZ89+vnPnzu+vX79mMzAwrMBmMC4DI9TV1bvLyspkkpKSUPTNmzePoaur68nNmzdLsRmK1UBubu63kyZNEkI3DGYyyNC8vLx3X79+FUZ3JTYDw/X19WdfuHAB7E1cwMDA4PPFixdT0cMUm4H1SUlJDXPnzsWbRJOTkxnmzZvXwMDA0IiskC4GUt3LDNSOFFCQUDfZQAOZqgkbOeKolvXIKtmGR/FFktcB1P1uFYSShpoAAAAASUVORK5CYII=") 10 10, auto' }
   ]
 ]
 

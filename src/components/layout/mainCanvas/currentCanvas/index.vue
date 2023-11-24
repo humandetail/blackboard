@@ -6,17 +6,22 @@
       ref="currentCanvasRef"
       :width="settings.width"
       :height="settings.height"
+      :style="{
+        cursor: currentTool.cursor
+      }"
     ></canvas>
   </div>
 </template>
 
 <script setup lang="ts">
 import { useSettingsStore } from '@/store'
-import { Canvas, PencilBrush } from 'fabric'
+import { Canvas } from 'fabric'
+import { drawGraphic } from './functions'
 
 const settingsStore = useSettingsStore()
 
 const settings = computed(() => settingsStore.settings)
+const currentTool = computed(() => settingsStore.currentTool)
 
 const currentCanvasRef = ref<HTMLCanvasElement | null>(null)
 
@@ -25,10 +30,12 @@ onMounted(() => {
     const canvas = new Canvas(currentCanvasRef.value, {
     })
 
-    canvas.isDrawingMode = true
-    const brush = canvas.freeDrawingBrush = new PencilBrush(canvas)
-    brush.color = 'red'
-    brush.width = 1
+    drawGraphic(canvas)
+
+    // canvas.isDrawingMode = true
+    // const brush = canvas.freeDrawingBrush = new PencilBrush(canvas)
+    // brush.color = 'red'
+    // brush.width = 1
   }
 })
 </script>

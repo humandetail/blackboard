@@ -1,3 +1,4 @@
+import { ToolType } from '@/definitions'
 import type { UploadFile } from 'ant-design-vue'
 
 export * from './style'
@@ -11,6 +12,7 @@ export interface IdRecord<T extends Id = number> {
 export type ColorString = string
 
 export interface LayerItem extends IdRecord {
+  title: string
   background: ColorString
   graphics: Set<Id>
   visible: boolean
@@ -27,4 +29,17 @@ export interface Settings {
   width: number
   height: number
   sourceFile?: UploadFile
+  readonly PIXEL_RATIO: number
+}
+
+export interface ToolItem {
+  label: string
+  value: ToolType
+  icon: string
+  cursor: string
+}
+
+export interface Pointer {
+  x: number
+  y: number
 }

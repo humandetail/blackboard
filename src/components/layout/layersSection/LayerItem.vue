@@ -21,6 +21,15 @@
       </a-button>
 
       <div class="preview">
+        <canvas
+          ref="previewCanvasRef"
+          :width="settingsStore.settings.width"
+          :height="settingsStore.settings.height"
+          :style="{
+            transformOrigin: 'center center',
+            transform: `translate(-50%, -50%) scale(${scale}, ${scale})`
+          }"
+        ></canvas>
         <svg class="bg" viewBox="0 0 32 32" width="32" height="32">
           <rect
             x="0"
@@ -64,8 +73,10 @@
 </template>
 
 <script setup lang="ts">
+import { GraphicItem, useGraphicsStore, useSettingsStore } from '@/store'
 import type { LayerItem } from '@/types'
 import { theme } from 'ant-design-vue'
+import { StaticCanvas } from 'fabric'
 
 const props = defineProps<{
   layer: LayerItem
@@ -85,6 +96,50 @@ const emits = defineEmits<{
 }>()
 
 const { token } = theme.useToken()
+
+const previewCanvasRef = ref()
+
+const graphicsStore = useGraphicsStore()
+const settingsStore = useSettingsStore()
+
+// 当前图层所有图像
+const graphics = computed(() => {
+  const graphics: GraphicItem[] = []
+  props.layer.graphics.forEach(id => {
+    const graphic = graphicsStore.graphics.get(id)
+    if (graphic) {
+      graphics.push(graphic)
+    }
+  })
+
+  return graphics
+})
+
+const previewSize = 24
+
+const scale = computed(() => {
+  const { width, height } = settingsStore.settings
+  return width > height
+    ? previewSize / width
+    : previewSize / height
+})
+
+let canvas: StaticCanvas
+
+watch(graphics, async () => {
+  if (!canvas) {
+    await nextTick()
+    canvas = new StaticCanvas(previewCanvasRef.value)
+  }
+
+  canvas.clear()
+
+  const objects = Array.from(graphics.value)
+  const len = objects.length
+  for (let i = 0; i < len; i++) {
+    canvas.add(await objects[i].clone())
+  }
+}, { deep: true })
 
 const handleItemClick = () => {
   emits('update:active-layer', props.layer.id)
@@ -151,13 +206,19 @@ const handleVisibleClick = () => {
     z-index: 1;
     width: 24px;
     height: 24px;
-    @include transparentBg(8px);
 
     .bg {
       display: none;
       position: absolute;
       left: -4px;
       top: -4px;
+    }
+
+    > canvas {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      @include transparentBg(v-bind('`${settingsStore.settings.width / 4}px`'));
     }
   }
 
